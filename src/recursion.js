@@ -153,27 +153,40 @@ var palindrome = function(string) {
 // modulo(17,5) // 2
 // modulo(22,6) // 4
 var modulo = function(x, y) {
+	if(x<0 || y<0){
+		if(x<0){x = -x};
+		if(y<0){y = -y};
+		var result = modulo(x, y);
+		return -result;
+	}
+	if(y === 0){
+		return NaN;
+	}
+	if(x<y){
+		return x;
+	}
+	if(x===y){
+		return 0;
+	}
+	return modulo(x-y, y);
 };
 
 // 12. Write a function that multiplies two numbers without using the * operator  or
 // JavaScript's Math object.
 var multiply = function(x, y) {
-	if(x<0 && y<0){
-		if(y === 0){
-			return 0
-		}
-		return -x + multiply(x, y + 1)
-	}
 	if(y === 0 ){
 		return 0;
 	}
-
+	if(x<0 && y<0){
+		return -x + multiply(x, y + 1)
+	}
 	return x + multiply(x, y-1);
 };
 
 // 13. Write a function that divides two numbers without using the / operator  or
 // JavaScript's Math object.
 var divide = function(x, y) {
+
 };
 
 // 14. Find the greatest common divisor (gcd) of two positive numbers.  The GCD of two
@@ -190,6 +203,24 @@ var gcd = function(x, y) {
 // compareStr('', '') // true
 // compareStr('tomato', 'tomato') // true
 var compareStr = function(str1, str2) {
+	if(str1 === undefined || str2 === undefined){
+		return false;
+	}
+	var length1 = str1.length;
+	var length2 = str2.length;
+	var len = Math.max.apply(null, [length1, length2]);
+	var result = true;
+	if(str1.length ===1 && str2.length ===1){
+		if(str1 !== str2){
+			return false;
+		}else{
+			return true;
+		}
+	}
+	for(var i=0;i<len;i++){
+		result = result && compareStr(str1[i], str2[i]);
+	}
+	return result;
 };
 
 // 16. Write a function that accepts a string and creates an array where each letter
@@ -240,11 +271,31 @@ var buildList = function(value, length) {
 // countOccurrence([2,7,4,4,1,4], 4) // 3
 // countOccurrence([2,'banana',4,4,1,'banana'], 'banana') // 2
 var countOccurrence = function(array, value) {
+	var count = 0;
+	if(!Array.isArray(array)){
+		if(array === value){
+			return 1;
+		}else{
+			return 0;
+		}
+	}
+	for(var i=0;i<array.length;i++){
+		count += countOccurrence(array[i], value);
+	}
+	return count;
 };
 
 // 20. Write a recursive version of map.
 // rMap([1,2,3], timesTwo); // [2,4,6]
 var rMap = function(array, callback) {
+	var result = [];
+	if(!Array.isArray(array)){
+		result.push(callback(array));
+	}
+	for(var i=0;i<array.length;i++){
+		result = result.concat(rMap(array[i], callback));
+	}
+	return result;
 };
 
 // 21. Write a function that counts the number of times a key occurs in an object.
@@ -252,6 +303,18 @@ var rMap = function(array, callback) {
 // countKeysInObj(testobj, 'r') // 1
 // countKeysInObj(testobj, 'e') // 2
 var countKeysInObj = function(obj, key) {
+	var count = 0;
+	if(typeof obj !== 'object'){
+		return obj===key ? 1 : 0; 
+	}else{
+		for(var keys in obj){
+			count += countKeysInObj(keys, key);
+			if(typeof obj[keys] === 'object'){
+				count += countKeysInObj(obj[keys], key);
+			}
+		}
+	}
+	return count;
 };
 
 // 22. Write a function that counts the number of times a value occurs in an object.
@@ -259,7 +322,20 @@ var countKeysInObj = function(obj, key) {
 // countValuesInObj(testobj, 'r') // 2
 // countValuesInObj(testobj, 'e') // 1
 var countValuesInObj = function(obj, value) {
+	var count = 0;
+	if(typeof obj !== 'object'){
+		if(obj === value){
+			return 1;
+		}else{
+			return 0;
+		}
+	}
+	for(var keys in obj){
+		count += countValuesInObj(obj[keys], value);
+	}
+	return count;
 };
+
 
 // 23. Find all keys in an object (and nested objects) by a provided name and rename
 // them to a provided new name while preserving the value stored at that key.
@@ -286,11 +362,32 @@ var nthFibo = function(n) {
 // var words = ['i', 'am', 'learning', 'recursion'];
 // capitalizedWords(words); // ['I', 'AM', 'LEARNING', 'RECURSION']
 var capitalizeWords = function(input) {
+	var result = [];
+	if(input.length === 1){
+		return input.toUpperCase();
+	}
+	for(var i=0;i<input.length;i++){
+		var new_word = capitalizeWords(input[i]);
+		if(new_word.length>1){
+			new_word = new_word.join('');
+		}
+		result.push(new_word);;
+	}
+	return result;
 };
 
 // 27. Given an array of strings, capitalize the first letter of each index.
 // capitalizeFirst(['car', 'poop', 'banana']); // ['Car', 'Poop', 'Banana']
 var capitalizeFirst = function(array) {
+	var result = [];
+	if(typeof array === 'string'){
+		var first_letter = array[0].toUpperCase();
+		return first_letter + array.substring(1);
+	}
+	for(var i=0;i<array.length;i++){
+		result.push(capitalizeFirst(array[i]));
+	}
+	return result;
 };
 
 // 28. Return the sum of all even numbers in an object containing nested objects.
